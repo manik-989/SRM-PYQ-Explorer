@@ -25,6 +25,8 @@ Common workflows include building a last-week revision plan by collecting recent
 
 ```bash
 VITE_API_BASE_URL=https://srm-pyq-api.onrender.com
+# Optional: override the dev/preview proxy target
+VITE_DEV_API_PROXY_TARGET=http://127.0.0.1:8000
 # Optional: public R2 base URL for permanent PDF links when API public_url is null
 VITE_R2_PUBLIC_BASE_URL=
 ```
@@ -45,6 +47,18 @@ If `npm run dev` was already running, restart it after config changes so the pro
 npm run lint
 npm run build
 ```
+
+## Testing and DevOps
+
+- `npm run test` / `npm run test:coverage` — Vitest unit tests with V8 coverage
+- `npm run typecheck` — TypeScript project check
+- `npm run lint` — ESLint
+- `docker build -t srm-pyq-web .` — production nginx image
+- Full stack: `docker compose up --build` from the workspace root
+- CI: `.github/workflows/ci.yml` runs lint, typecheck, tests, build, Docker build, and a Trivy image scan
+- Security: CodeQL (weekly) and Dependabot (weekly)
+
+See the workspace root `README.md` for the full DevOps guide.
 
 ## Routes
 

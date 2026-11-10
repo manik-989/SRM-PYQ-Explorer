@@ -40,6 +40,7 @@ export class ApiError extends Error {
 
   constructor(message: string, status: number) {
     super(message)
+    this.name = 'ApiError'
     this.status = status
   }
 }
@@ -81,6 +82,11 @@ async function requestJson<T>(path: string, params?: Record<string, string | num
     } catch (error) {
       window.clearTimeout(timeoutId)
 
+      // Errors returned by the API are final. Only transport failures retry.
+      if (error instanceof ApiError) {
+        throw error
+      }
+
       const timedOut = error instanceof DOMException && error.name === 'AbortError'
       const canRetry = attempt < MAX_RETRY_ATTEMPTS
 
@@ -91,10 +97,6 @@ async function requestJson<T>(path: string, params?: Record<string, string | num
 
       if (timedOut) {
         throw new ApiError('Request timed out. Please try again.', 408)
-      }
-
-      if (error instanceof ApiError) {
-        throw error
       }
 
       throw new ApiError('Network request failed. Please try again.', 0)
